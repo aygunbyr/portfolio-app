@@ -1,15 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import Image from 'next/image'
+import Link from 'next/link'
+import React from 'react'
 
 type HeaderProps = {
-  name: string;
+  name: string
   pages: {
-    id: number;
-    label: string;
-    link: string;
-  }[];
-};
+    id: number
+    label: string
+    link: string
+  }[]
+}
 
 export const Header = ({ name, pages }: HeaderProps) => {
   return (
@@ -27,7 +27,7 @@ export const Header = ({ name, pages }: HeaderProps) => {
               >
                 {page.label}
               </Link>
-            );
+            )
           })}
         </nav>
         <h1 className="text-white uppercase pl-2 sm:pl-0"> {name} </h1>
@@ -42,5 +42,5 @@ export const Header = ({ name, pages }: HeaderProps) => {
         aria-label={`Image of ${name}`}
       />
     </header>
-  );
-};
+  )
+}

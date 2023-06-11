@@ -1,22 +1,22 @@
-import Image from "next/image";
-import React from "react";
-import { Github, Window } from "@/app/icons";
+import Image from 'next/image'
+import React from 'react'
+import { Github, Window } from '@/app/icons'
 
 type ProjectCardProps = {
   data: {
-    title: string;
-    body1: string;
-    body2: string;
-    image: string;
+    title: string
+    body1: string
+    body2: string
+    image: string
     links: {
-      text: string;
-      url: string;
-    }[];
-  };
-};
+      text: string
+      url: string
+    }[]
+  }
+}
 
 export const ProjectCard = ({ data }: ProjectCardProps) => {
-  const { title, body1, body2, image, links } = data;
+  const { title, body1, body2, image, links } = data
 
   return (
     <div className="rounded-lg shadow-lg bg-grey-light w-full sm:w-1/3-g ">
@@ -45,5 +45,5 @@ export const ProjectCard = ({ data }: ProjectCardProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

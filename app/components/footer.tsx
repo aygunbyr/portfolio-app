@@ -1,9 +1,9 @@
-import React from "react";
-import { Envelope, Linkedin, Medium, Twitter } from "../icons";
+import React from 'react'
+import { Envelope, Linkedin, Medium, Twitter } from '../icons'
 
 type FooterProps = {
-  contactMeLinks: string[];
-};
+  contactMeLinks: string[]
+}
 
 export const Footer = ({ contactMeLinks }: FooterProps) => {
   return (
@@ -23,5 +23,5 @@ export const Footer = ({ contactMeLinks }: FooterProps) => {
         </a>
       </div>
     </footer>
-  );
-};
+  )
+}
