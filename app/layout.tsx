@@ -1,4 +1,5 @@
 import './global.css'
+import React from 'react'
 import { Footer } from './components/footer'
 import { Header } from './components/header'
 import { aboutMeData, pages, contactMeLinks } from './data/data'

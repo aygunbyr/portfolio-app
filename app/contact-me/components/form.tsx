@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 const Form = () => {
   const [isMessageSent, setMessageSent] = useState<boolean>(false)
@@ -57,7 +57,7 @@ const Form = () => {
       setMessageField('')
     } catch (error: any) {
       console.log(
-        `There was a problem with the fetch operation: ${error.message}`
+        `There was a problem with the fetch operation ${error.message}`
       )
     }
   }
