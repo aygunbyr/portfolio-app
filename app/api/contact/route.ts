@@ -1,45 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
-const fs = require("fs")
-const path = require("path")
+import React from "react"
+import { NextRequest, NextResponse } from "next/server"
+import mongoose from "mongoose"
+import Message from '@/models/Message'
 
-export async function POST(request: NextRequest) {
-    const data = await request.json()
+export async function POST(req: NextRequest, res: NextResponse) {
+  let client
 
-    // READ DB - JSON File
+  try {
+    client = await mongoose.connect(process.env.NEXT_PUBLIC_MONGODB_URI || '')
+    console.log("DB connected")
 
-    const filePath = path.resolve(process.cwd(), 'app/data/submission.json')
+  } catch(error) {
+    console.log('There was an error connection to the DB', error)
+  }
 
-    let submissions: any = []
+  const data = await req.json()
+  const {name, email, company, message} = data
 
-    try {
-        const data = fs.readFileSync(filePath, 'utf8', )
-        submissions = JSON.parse(data)
-    } catch(error) {
-        console.error("Error reading this file", error)
-    }
+  if(!name || !company || !email  || !message || !email.includes('@') || message.trim() === "" || name.trim() === "") {
+    NextResponse.json({message: "Invalid input - fill all the fields"}, {status:422})
+    return
+  }
 
-    submissions.push(data)
+  const newData = {...data, date: new Date()}
 
-    try {
-        const newData = JSON.stringify(submissions, null, 2)
-        fs.writeFileSync(filePath, newData, "utf8")
-    } catch(error) {
-        console.error("Error writing this file", error)
-    }
-
-    return NextResponse.json({
-        data: data,
-        message: "This message has been successfully sent"
+  try {
+    await Message.create(newData)
+    console.log("Message Sent")
+    return NextResponse.json({message: "Message sent"}, {
+      status: 201,
     })
 
+  } catch(error) {
+    console.log("Message couldn't be sent", error)
+    return NextResponse.json({message: 'Error sending the message'}, {status: 500})
+  }
 
 
-    // Parse the JSON + add the new data + write in JSON file again
+
 
 }
-
-// export async function GET() {
-//     return NextResponse.json({
-//         message: "It's time to Code!!"
-//     })
-// }

@@ -1,41 +1,26 @@
-'use client'
-import React, { useState } from 'react'
+'use client';
+import React, { useState, useRef, useEffect } from 'react';
 
 const Form = () => {
-  const [isMessageSent, setMessageSent] = useState<boolean>(false)
+  const [isMessageSent, setMessageSent] = useState<boolean>(false);
 
-  const [nameField, setNameField] = useState<string>('')
-  const [companyField, setCompanyField] = useState<string>('')
-  const [emailField, setEmailField] = useState<string>('')
-  const [messageField, setMessageField] = useState<string>('')
-
-  const handleChangeName = (e: React.FormEvent<HTMLInputElement>) =>
-    setNameField(e.currentTarget.value)
-
-  const handleChangeCompany = (e: React.FormEvent<HTMLInputElement>) =>
-    setCompanyField(e.currentTarget.value)
-
-  const handleChangeEmail = (e: React.FormEvent<HTMLInputElement>) =>
-    setEmailField(e.currentTarget.value)
-
-  const handleChangeMessage = (e: React.FormEvent<HTMLTextAreaElement>) =>
-    setMessageField(e.currentTarget.value)
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const target = e.currentTarget
+    e.preventDefault();
+    const target = e.currentTarget;
 
-    const name = target.elements.namedItem('name') as HTMLInputElement
-    const company = target.elements.namedItem('company') as HTMLInputElement
-    const email = target.elements.namedItem('email') as HTMLInputElement
-    const message = target.elements.namedItem('message') as HTMLTextAreaElement
+    const name = target.elements.namedItem('name') as HTMLInputElement;
+    const company = target.elements.namedItem('company') as HTMLInputElement;
+    const email = target.elements.namedItem('email') as HTMLInputElement;
+    const message = target.elements.namedItem('message') as HTMLInputElement;
 
     const data = {
       name: name.value,
       company: company.value,
       email: email.value,
       message: message.value,
-    }
+    };
 
     try {
       const response = await fetch('/api/contact', {
@@ -44,27 +29,34 @@ const Form = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      })
-
+      });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+        throw new Error('HTTP error! status: ' + response.status);
       }
-
-      setMessageSent(true)
-      setNameField('')
-      setCompanyField('')
-      setEmailField('')
-      setMessageField('')
+      setMessageSent(true);
     } catch (error: any) {
       console.log(
-        `There was a problem with the fetch operation ${error.message}`
-      )
+        'There was a problem with the fetch operation ' + error.message
+      );
     }
   }
 
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (isMessageSent && formRef) {
+      formRef.current?.reset();
+      setTimeout(() => {
+        setMessageSent(false);
+      }, 2000);
+    }
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isMessageSent]);
+
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white p-10">
+      <form onSubmit={handleSubmit} className="bg-white p-10" ref={formRef}>
         <div className="mb-4">
           <label className="label-form" htmlFor="name">
             Name
@@ -73,8 +65,6 @@ const Form = () => {
             id="name"
             type="text"
             name="name"
-            value={nameField}
-            onChange={handleChangeName}
             className="input-form"
             required
             minLength={3}
@@ -90,8 +80,6 @@ const Form = () => {
             id="company"
             type="text"
             name="company"
-            value={companyField}
-            onChange={handleChangeCompany}
             className="input-form"
             minLength={2}
             maxLength={200}
@@ -106,8 +94,6 @@ const Form = () => {
             id="email"
             type="email"
             name="email"
-            value={emailField}
-            onChange={handleChangeEmail}
             className="input-form"
             required
             minLength={2}
@@ -122,21 +108,22 @@ const Form = () => {
           <textarea
             id="message"
             name="message"
-            value={messageField}
-            onChange={handleChangeMessage}
             className="input-form"
             required
             minLength={10}
             maxLength={1000}
           />
         </div>
-        <button type="submit" className="form-button">
+        <button
+          type="submit"
+          className="bg-blue rounded-md text-white hover:text-blue hover:bg-white min-w-100 px-5 h-12 border border-slate-300 hover:border-indigo-300hover:border-1"
+        >
           Send Message
         </button>
       </form>
-      {isMessageSent && <p>Message has been sent</p>}
+      {isMessageSent && <p> Message has been Sent</p>}
     </>
-  )
-}
+  );
+};
 
-export default Form
+export default Form;
