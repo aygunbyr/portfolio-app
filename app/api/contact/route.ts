@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const data = await req.json()
   const {name, email, company, message} = data
 
-  if(!name || !company || !email  || !message || !email.includes('@') || message.trim() === "" || name.trim() === "") {
+  if(!name || !email  || !message || !email.includes('@') || message.trim() === "" || name.trim() === "") {
     NextResponse.json({message: "Invalid input - fill all the fields"}, {status:422})
     return
   }

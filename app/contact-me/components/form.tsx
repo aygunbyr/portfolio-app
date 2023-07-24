@@ -1,27 +1,23 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+
+type FormData = {
+  name: string;
+  company?: string;
+  email: string;
+  message: string;
+};
 
 const Form = () => {
-  const [isMessageSent, setMessageSent] = useState<boolean>(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitSuccessful },
+    reset,
+  } = useForm<FormData>();
 
-  const formRef = useRef<HTMLFormElement | null>(null);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const target = e.currentTarget;
-
-    const name = target.elements.namedItem('name') as HTMLInputElement;
-    const company = target.elements.namedItem('company') as HTMLInputElement;
-    const email = target.elements.namedItem('email') as HTMLInputElement;
-    const message = target.elements.namedItem('message') as HTMLInputElement;
-
-    const data = {
-      name: name.value,
-      company: company.value,
-      email: email.value,
-      message: message.value,
-    };
-
+  const onSubmit = async (data: FormData) => {
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
@@ -31,32 +27,19 @@ const Form = () => {
         },
       });
       if (!response.ok) {
-        throw new Error('HTTP error! status: ' + response.status);
+        throw new Error(`HTTP Error! status ${response.status}`);
       }
-      setMessageSent(true);
+      reset();
     } catch (error: any) {
       console.log(
-        'There was a problem with the fetch operation ' + error.message
+        `There was a problem with the fetch operation ${error.message}`
       );
     }
-  }
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    if (isMessageSent && formRef) {
-      formRef.current?.reset();
-      setTimeout(() => {
-        setMessageSent(false);
-      }, 2000);
-    }
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [isMessageSent]);
+  };
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="bg-white p-10" ref={formRef}>
+      <form onSubmit={handleSubmit(onSubmit)} className="bg-white p-10">
         <div className="mb-4">
           <label className="label-form" htmlFor="name">
             Name
@@ -64,12 +47,20 @@ const Form = () => {
           <input
             id="name"
             type="text"
-            name="name"
             className="input-form"
-            required
-            minLength={3}
-            maxLength={200}
+            {...register('name', {
+              required: true,
+              minLength: {
+                value: 3,
+                message: 'The name must contain at least 3 characters.',
+              },
+              maxLength: {
+                value: 200,
+                message: 'The name may contain at most 200 characters.',
+              },
+            })}
           />
+          {errors.name && <p>{errors.name.message}</p>}
         </div>
 
         <div className="mb-4">
@@ -79,11 +70,20 @@ const Form = () => {
           <input
             id="company"
             type="text"
-            name="company"
             className="input-form"
-            minLength={2}
-            maxLength={200}
+            {...register('company', {
+              required: false,
+              minLength: {
+                value: 2,
+                message: 'The company must contain at least 2 characters.',
+              },
+              maxLength: {
+                value: 200,
+                message: 'The company may contain at most 200 characters.',
+              },
+            })}
           />
+          {errors.company && <p>{errors.company.message}</p>}
         </div>
 
         <div className="mb-4">
@@ -93,12 +93,20 @@ const Form = () => {
           <input
             id="email"
             type="email"
-            name="email"
             className="input-form"
-            required
-            minLength={2}
-            maxLength={200}
+            {...register('email', {
+              required: true,
+              minLength: {
+                value: 5,
+                message: 'The email must contain at least 5 characters.',
+              },
+              maxLength: {
+                value: 200,
+                message: 'The email may contain at most 200 characters.',
+              },
+            })}
           />
+          {errors.email && <p>{errors.email.message}</p>}
         </div>
 
         <div className="mb-4">
@@ -107,12 +115,20 @@ const Form = () => {
           </label>
           <textarea
             id="message"
-            name="message"
             className="input-form"
-            required
-            minLength={10}
-            maxLength={1000}
+            {...register('message', {
+              required: true,
+              minLength: {
+                value: 10,
+                message: 'The message must contain at least 10 characters.',
+              },
+              maxLength: {
+                value: 1000,
+                message: 'The message may contain at most 1000 characters.',
+              },
+            })}
           />
+          {errors.message && <p>{errors.message.message}</p>}
         </div>
         <button
           type="submit"
@@ -121,7 +137,7 @@ const Form = () => {
           Send Message
         </button>
       </form>
-      {isMessageSent && <p> Message has been Sent</p>}
+      {isSubmitSuccessful && <p> Message has been Sent</p>}
     </>
   );
 };
